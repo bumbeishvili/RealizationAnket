@@ -1,0 +1,414 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Anket</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
+    crossorigin="anonymous">
+
+  <style>
+    @media print {
+      body {
+        -webkit-print-color-adjust: exact;
+      }
+    }
+
+    body {
+      background-color: #FAFAFA;
+      font-family: 'Helvetica';
+    }
+
+    .person {
+      font-size: 14px;
+      float: right;
+      margin-top: -10px;
+      margin-right: 40px;
+    }
+
+    .signature {
+      font-size: 12px;
+      float: right;
+      margin-right: -190px;
+    }
+
+    .tire {
+      float: right;
+      width: 300px;
+      border-bottom: 1px solid black;
+    }
+
+    table {
+      margin-bottom: 4rem !important;
+    }
+
+    table td,
+    .table th {
+
+      padding: 0 !important;
+    }
+
+    .title {
+      text-align: center!important;
+      vertical-align: middle !important;
+    }
+
+    table,
+    th,
+    td {
+      border: 1px solid gray;
+      text-align: center!important;
+      vertical-align: middle !important;
+    }
+
+    .company {
+      background-color: #BFCAD1 !important;
+      Font-size: 30px;
+      text-align: center;
+      color: #2C3E50;
+
+    }
+
+    .sk-cube-grid {
+      width: 40px;
+      height: 40px;
+      margin: 300px auto;
+      top: 50%;
+      position: relative
+    }
+
+    .sk-cube-grid .sk-cube {
+      width: 33%;
+      height: 33%;
+      background-color: #67809F;
+      float: left;
+      -webkit-animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
+      animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
+    }
+
+    .sk-cube-grid .sk-cube1 {
+      -webkit-animation-delay: 0.2s;
+      animation-delay: 0.2s;
+    }
+
+    .sk-cube-grid .sk-cube2 {
+      -webkit-animation-delay: 0.3s;
+      animation-delay: 0.3s;
+    }
+
+    .sk-cube-grid .sk-cube3 {
+      -webkit-animation-delay: 0.4s;
+      animation-delay: 0.4s;
+    }
+
+    .sk-cube-grid .sk-cube4 {
+      -webkit-animation-delay: 0.1s;
+      animation-delay: 0.1s;
+    }
+
+    .sk-cube-grid .sk-cube5 {
+      -webkit-animation-delay: 0.2s;
+      animation-delay: 0.2s;
+    }
+
+    .sk-cube-grid .sk-cube6 {
+      -webkit-animation-delay: 0.3s;
+      animation-delay: 0.3s;
+    }
+
+    .sk-cube-grid .sk-cube7 {
+      -webkit-animation-delay: 0s;
+      animation-delay: 0s;
+    }
+
+    .sk-cube-grid .sk-cube8 {
+      -webkit-animation-delay: 0.1s;
+      animation-delay: 0.1s;
+    }
+
+    .sk-cube-grid .sk-cube9 {
+      -webkit-animation-delay: 0.2s;
+      animation-delay: 0.2s;
+    }
+
+    @-webkit-keyframes sk-cubeGridScaleDelay {
+      0%,
+      70%,
+      100% {
+        -webkit-transform: scale3D(1, 1, 1);
+        transform: scale3D(1, 1, 1);
+      }
+      35% {
+        -webkit-transform: scale3D(0, 0, 1);
+        transform: scale3D(0, 0, 1);
+      }
+    }
+
+    @keyframes sk-cubeGridScaleDelay {
+      0%,
+      70%,
+      100% {
+        -webkit-transform: scale3D(1, 1, 1);
+        transform: scale3D(1, 1, 1);
+      }
+      35% {
+        -webkit-transform: scale3D(0, 0, 1);
+        transform: scale3D(0, 0, 1);
+      }
+    }
+
+    .track,
+    .track-inset,
+    .track-overlay {
+      stroke-linecap: round;
+    }
+
+    .track {
+      stroke: #000;
+      stroke-opacity: 0.3;
+      stroke-width: 10px;
+    }
+
+    .track-inset {
+      stroke: #ddd;
+      stroke-width: 8px;
+    }
+
+    .track-overlay {
+      pointer-events: stroke;
+      stroke-width: 50px;
+      stroke: transparent;
+      cursor: pointer;
+    }
+
+    .handle {
+      fill: #fff;
+      stroke: #000;
+      stroke-opacity: 0.5;
+      stroke-width: 1.25px;
+    }
+  </style>
+
+
+
+</head>
+
+<body translate="no">
+  <!-- <div class="loader">
+    <div class="sk-cube-grid">
+      <div class="sk-cube sk-cube1"></div>
+      <div class="sk-cube sk-cube2"></div>
+      <div class="sk-cube sk-cube3"></div>
+      <div class="sk-cube sk-cube4"></div>
+      <div class="sk-cube sk-cube5"></div>
+      <div class="sk-cube sk-cube6"></div>
+      <div class="sk-cube sk-cube7"></div>
+      <div class="sk-cube sk-cube8"></div>
+      <div class="sk-cube sk-cube9"></div>
+    </div>
+
+  </div> -->
+  <div class="container centered">
+    <div id="result"></div>
+
+
+  </div>
+  <script src="libs/d3.v4.min.js"></script>
+  <script src="libs/tabletop.min.js"></script>
+
+
+  <script>
+    // var publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/1MdDmktMl8EA6hojwr06MweLMF6p9438TOk_T1D955hA/pubhtml';
+    var url = "https://docs.google.com/spreadsheets/d/1_is_AOBBb97x2ADLq8MZ_4JxRmrbfhtPzLTfFf5WbJo/edit#gid=0";
+
+    var logEnabled = true;
+    var a, b;
+    var gData;
+
+    function log(item) {
+      if (logEnabled) {
+        console.log(item);
+      }
+    }
+
+    function init() {
+      log('--------------------- INIT --------------------')
+      Tabletop.init({
+        key: url,
+        callback: showInfo
+
+      })
+
+    }
+
+    function showInfo(sheets, tabletop) {
+      var config = sheets.config.elements[0];
+      var grouped = sheets.data.elements.groupBy([config.groupby]);
+      // debugger;
+
+      gData = {
+        config: config,
+        grouped: grouped,
+        sheets: sheets,
+        columnLength: sheets.data.columnNames.length
+      }
+
+
+
+
+      console.log(gData);
+      var html = `
+
+        <table id="result" class="table table-striped">
+      <tr class="company">
+        <th colspan="${gData.columnLength}">
+            ${config['company']}
+        </th>
+      </tr>
+
+  
+     
+      
+
+      ${[gData.grouped[config['days'] - 1]].map((d, i) => {
+
+          var v = {
+            count: i + 1,
+            value: d[config['groupby']]
+          }
+
+          var itemscount = d.values.length;
+          if (itemscount < config['count']) {
+            var addItems = config['count'] - itemscount;
+            var items = d3.range(addItems).map(i => {
+              var result = {};
+              sheets.data.columnNames.forEach(c => {
+                result[c] = "";
+              })
+
+              return result;
+            });
+            d.values = d.values.concat(items)
+          }
+          return ` 
+       
+          <tr> 
+              <th  class='title' rowspan="2" colspan="${gData.columnLength - 2}">
+              ${config['title']}
+              </th>
+              <th>
+                  ${config['groupby']}
+              </th>
+              <th>
+                  ${v.value}
+              </th>
+        <tr> 
+           
+          <th>
+              ${config['number']}
+          </th>
+          <th>
+              ${ Number(config['days'])}
+          </th>
+        </tr>
+
+        <tr>
+        <td> ${config['columnNumber']}</td>
+                ${
+            sheets.data.columnNames.filter(c => c != config['groupby']).map(s => {
+              return `
+                       <th>${s}</th>
+                    `
+            }).join("")
+            }
+                 </tr>
+
+
+
+          ${ d.values.map((it, j) => {
+              return `
+                 <tr>
+                 <td>${j + 1}</td>
+                ${
+                sheets.data.columnNames.filter(c => c != config['groupby']).map(s => {
+                  return `
+                       <td>${it[s]}</td>
+                    `
+                }).join("")
+                }
+                 </tr>
+              `
+            }).join('')
+            }
+
+
+            <tr>
+            <td  colspan="${gData.columnLength - 2}">
+             
+              </td>
+        <td>
+            <strong> ${config['sum']} </strong>
+        </td>
+        <td>
+            <strong> ${d.values.map(l => +l[config['sumColumn']]).reduce((a, b) => a + b)}</strong>
+            
+        </td>
+        </tr>
+
+          `
+        }).join('')}
+     
+
+
+
+        
+      </table>
+
+ 
+      <div class="tire"></div>
+      <div class='signature'>${config['signature']}</div>
+      <div class="person">${config['responsiblePerson']}</div>
+      `
+
+
+      document.getElementById('result').innerHTML = html;
+
+    }
+
+
+    Array.prototype.groupBy = function (props) {
+      var arr = this;
+      var partialResult = {};
+
+      arr.forEach(el => {
+
+        var grpObj = {};
+
+        props.forEach(prop => {
+          grpObj[prop] = el[prop]
+        });
+
+        var key = JSON.stringify(grpObj);
+
+        if (!partialResult[key]) partialResult[key] = [];
+
+        partialResult[key].push(el);
+
+      });
+
+      var finalResult = Object.keys(partialResult).map(key => {
+        var keyObj = JSON.parse(key);
+        keyObj.values = partialResult[key];
+        return keyObj;
+      })
+
+      return finalResult;
+    }
+
+    window.addEventListener('DOMContentLoaded', init)
+  </script>
+
+
+</body>
+
+</html>

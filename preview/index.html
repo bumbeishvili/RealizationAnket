@@ -1,0 +1,414 @@
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Football Chart </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: #FAFAFA'
+
+    }
+
+    .sk-cube-grid {
+      width: 40px;
+      height: 40px;
+      margin: 300px auto;
+      top: 50%;
+      position: relative
+    }
+
+    .sk-cube-grid .sk-cube {
+      width: 33%;
+      height: 33%;
+      background-color: #67809F;
+      float: left;
+      -webkit-animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
+      animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
+    }
+
+    .sk-cube-grid .sk-cube1 {
+      -webkit-animation-delay: 0.2s;
+      animation-delay: 0.2s;
+    }
+
+    .sk-cube-grid .sk-cube2 {
+      -webkit-animation-delay: 0.3s;
+      animation-delay: 0.3s;
+    }
+
+    .sk-cube-grid .sk-cube3 {
+      -webkit-animation-delay: 0.4s;
+      animation-delay: 0.4s;
+    }
+
+    .sk-cube-grid .sk-cube4 {
+      -webkit-animation-delay: 0.1s;
+      animation-delay: 0.1s;
+    }
+
+    .sk-cube-grid .sk-cube5 {
+      -webkit-animation-delay: 0.2s;
+      animation-delay: 0.2s;
+    }
+
+    .sk-cube-grid .sk-cube6 {
+      -webkit-animation-delay: 0.3s;
+      animation-delay: 0.3s;
+    }
+
+    .sk-cube-grid .sk-cube7 {
+      -webkit-animation-delay: 0s;
+      animation-delay: 0s;
+    }
+
+    .sk-cube-grid .sk-cube8 {
+      -webkit-animation-delay: 0.1s;
+      animation-delay: 0.1s;
+    }
+
+    .sk-cube-grid .sk-cube9 {
+      -webkit-animation-delay: 0.2s;
+      animation-delay: 0.2s;
+    }
+
+    @-webkit-keyframes sk-cubeGridScaleDelay {
+      0%,
+      70%,
+      100% {
+        -webkit-transform: scale3D(1, 1, 1);
+        transform: scale3D(1, 1, 1);
+      }
+      35% {
+        -webkit-transform: scale3D(0, 0, 1);
+        transform: scale3D(0, 0, 1);
+      }
+    }
+
+    @keyframes sk-cubeGridScaleDelay {
+      0%,
+      70%,
+      100% {
+        -webkit-transform: scale3D(1, 1, 1);
+        transform: scale3D(1, 1, 1);
+      }
+      35% {
+        -webkit-transform: scale3D(0, 0, 1);
+        transform: scale3D(0, 0, 1);
+      }
+    }
+
+    .track,
+    .track-inset,
+    .track-overlay {
+      stroke-linecap: round;
+    }
+
+    .track {
+      stroke: #000;
+      stroke-opacity: 0.3;
+      stroke-width: 10px;
+    }
+
+    .track-inset {
+      stroke: #ddd;
+      stroke-width: 8px;
+    }
+
+    .track-overlay {
+      pointer-events: stroke;
+      stroke-width: 50px;
+      stroke: transparent;
+      cursor: pointer;
+    }
+
+    .handle {
+      fill: #fff;
+      stroke: #000;
+      stroke-opacity: 0.5;
+      stroke-width: 1.25px;
+    }
+  </style>
+
+
+
+</head>
+
+<body translate="no">
+  <div class="loader">
+    <div class="sk-cube-grid">
+      <div class="sk-cube sk-cube1"></div>
+      <div class="sk-cube sk-cube2"></div>
+      <div class="sk-cube sk-cube3"></div>
+      <div class="sk-cube sk-cube4"></div>
+      <div class="sk-cube sk-cube5"></div>
+      <div class="sk-cube sk-cube6"></div>
+      <div class="sk-cube sk-cube7"></div>
+      <div class="sk-cube sk-cube8"></div>
+      <div class="sk-cube sk-cube9"></div>
+    </div>
+
+  </div>
+  <div class="container centered">
+    <div id="myGraph"></div>
+  </div>
+  <script src="libs/d3.v4.min.js"></script>
+  <script src="libs/tabletop.min.js"></script>
+
+  <script src="scripts/d3script.js"></script>
+
+  <script>
+      var publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/1MdDmktMl8EA6hojwr06MweLMF6p9438TOk_T1D955hA/pubhtml';
+     //var josephsUrl = "https://docs.google.com/spreadsheets/d/1XMmhcwX4WOvEBbTniZgIUUVl0FunmVSY7mxRWukP1Kc/pubhtml";
+
+    var logEnabled = true;
+    var a, b;
+
+    function log(item) {
+      if (logEnabled) {
+        console.log(item);
+      }
+    }
+
+    function init() {
+      log('--------------------- INIT --------------------')
+      Tabletop.init({
+        key: publicSpreadsheetUrl,
+        callback: showInfo
+
+      })
+
+    }
+
+    function showInfo(sheets, tabletop) {
+      // log('--------------------- SHOW_INFO --------------------')
+      // log("data loaded from sheets");
+      // log(data);
+
+      var colorSheetData = sheets["color_sheet"].elements
+      var dataSheetData = sheets["data_sheet"].elements
+
+      data = dataSheetData.map(function (d) {
+        return {
+          continent: d["Continent"],
+          country: d["Country"],
+          state: d["State"],
+          team: d["Team"],
+          subteam: d["Sub-Team"],
+          subsubteam: d["Sub-Sub-Team"],
+          manager: d["Manager"]
+        }
+      })
+
+      var colorData = colorSheetData.map(function (d) {
+        return {
+          key: d.Key,
+          value: d.Value
+        }
+      })
+
+
+      // generate hierarchi data from flat data
+      var nodeData = getNodesData(data)
+      var hierarchyData = getHierarchyData(data)
+      console.log(hierarchyData);
+
+      var chart = renderChart()
+        .svgHeight(window.innerHeight - 30)
+        .svgWidth(window.innerWidth - 30)
+        .hierarchyData(hierarchyData)
+        .nodeData(nodeData)
+        .colorData(colorData)
+        .data(data)
+
+      d3.select("#myGraph")
+        .call(chart);
+      d3.selectAll('.loader').html("");
+
+    }
+
+    function getHierarchyData(data) {
+      var header = data.shift();
+
+      data = data.filter(function(d){
+           return d.team != header.team
+      })
+
+
+
+      var teams = d3.nest()
+        .key(function (d) { return d.team; })
+        .key(function (d) { return d.subteam; })
+        .key(function (d) { return d.subsubteam; })
+        .entries(data)
+
+      teams = teams.map(function (d) {
+
+        var sub = d.values.filter(t => t.key !== "").map(function (s) {
+          var subsub = s.values.filter(t => t.key !== "").map(function (ss) {
+            return {
+              name: ss.key,
+              data: ss.values
+            }
+          })
+
+          var subResult = subsub.length > 0 ? {
+            name: s.key,
+            children: subsub,
+            isopened: false,
+            parentIsOpened: false,
+            direction: "vertical"
+          } : { name: s.key }
+
+          return subResult;
+        })
+
+        var result = sub.length > 0 ? {
+          name: d.key,
+          children: sub,
+          isopened: false,
+          parentIsOpened: false,
+          direction: "vertical"
+        } : { name: d.key }
+
+        return result
+      })
+
+      var continents = d3.nest()
+        .key(function (d) { return d.continent; })
+        .key(function (d) { return d.country; })
+        .key(function (d) { return d.state; })
+        .entries(data)
+
+      continents = continents.map(function (d) {
+        var sub = d.values.filter(t => t.key !== "").map(function (s) {
+          var subsub = s.values.filter(t => t.key !== "").map(function (ss) {
+            return {
+              name: ss.key,
+              data: ss.values
+            }
+          })
+
+          var subResult = subsub.length > 0 ? {
+            name: s.key,
+            children: subsub,
+            isopened: false,
+            parentIsOpened: false,
+            direction: "horizontal"
+          } : { name: s.key }
+
+          return subResult;
+        })
+
+        var result = sub.length > 0 ? {
+          name: d.key,
+          children: sub,
+          isopened: false,
+          parentIsOpened: false,
+          direction: "horizontal"
+        } : { name: d.key }
+
+        return result
+      })
+
+      return [
+        { name: "" },
+        { name: header.continent, children: continents, isopened: false, parentIsOpened: false, direction: "horizontal" },
+        { name: header.manager },
+        { name: header.team, children: teams, isopened: false, parentIsOpened: false, direction: "vertical" },
+
+      ]
+    }
+
+    function getNodesData(data) {
+      var result = [];
+      data.map(function (d) {
+        var node = {}
+        if (d.country == "") {
+          if (d.subteam == "") {
+            node = {
+              name: d.manager,
+              horizontal: d.continent,
+              vertical: d.team
+            }
+          } else {
+            if (d.subsubteam == "") {
+              node = {
+                name: d.manager,
+                horizontal: d.continent,
+                vertical: d.subteam
+              }
+            } else {
+              node = {
+                name: d.manager,
+                horizontal: d.continent,
+                vertical: d.subsubteam
+              }
+            }
+
+          }
+        } else {
+          if (d.state == "") {
+            if (d.subteam == "") {
+              node = {
+                name: d.manager,
+                horizontal: d.country,
+                vertical: d.team
+              }
+            } else {
+              if (d.subsubteam == "") {
+                node = {
+                  name: d.manager,
+                  horizontal: d.country,
+                  vertical: d.subteam
+                }
+              } else {
+                node = {
+                  name: d.manager,
+                  horizontal: d.country,
+                  vertical: d.subsubteam
+                }
+              }
+
+            }
+          } else {
+            if (d.subteam == "") {
+              node = {
+                name: d.manager,
+                horizontal: d.state,
+                vertical: d.team
+              }
+            } else {
+              if (d.subsubteam == "") {
+                node = {
+                  name: d.manager,
+                  horizontal: d.state,
+                  vertical: d.subteam
+                }
+              } else {
+                node = {
+                  name: d.manager,
+                  horizontal: d.state,
+                  vertical: d.subsubteam
+                }
+              }
+
+            }
+          }
+
+
+
+        }
+        result.push(node)
+      })
+
+      return result;
+    }
+
+    window.addEventListener('DOMContentLoaded', init)
+  </script>
+
+
+</body>
+
+</html>
